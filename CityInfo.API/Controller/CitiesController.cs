@@ -16,7 +16,7 @@ public class CitiesController : ControllerBase
     [HttpGet("{id}")]
     public JsonResult GetCity(int id)
     {
-        CityDto city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == id);
+        CityDto? city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == id);
         if (city == null)
         {
             // todo...
