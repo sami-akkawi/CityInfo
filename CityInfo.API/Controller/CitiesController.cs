@@ -8,20 +8,20 @@ namespace CityInfo.API.Controller;
 public class CitiesController : ControllerBase
 {
     [HttpGet]
-    public JsonResult GetCities()
+    public ActionResult<IEnumerable<CityDto>> GetCities()
     {
-        return new JsonResult(CitiesDataStore.Current.Cities);
+        return Ok(CitiesDataStore.Current.Cities);
     }
     
     [HttpGet("{id}")]
-    public JsonResult GetCity(int id)
+    public ActionResult<CityDto> GetCity(int id)
     {
         CityDto? city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == id);
         if (city == null)
         {
-            // todo...
+            return NotFound();
         }
         
-        return new JsonResult(city);
+        return Ok(city);
     }
 }
