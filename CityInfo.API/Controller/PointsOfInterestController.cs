@@ -110,7 +110,7 @@ public class PointsOfInterestController : ControllerBase
         };
         patchDocument.ApplyTo(pointOfInterestToPatch, ModelState);
 
-        if (!ModelState.IsValid)
+        if (!ModelState.IsValid || !TryValidateModel(pointOfInterestToPatch))
         {
             return BadRequest(ModelState);
         }
