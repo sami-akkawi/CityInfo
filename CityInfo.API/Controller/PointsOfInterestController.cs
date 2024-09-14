@@ -1,4 +1,5 @@
 ﻿using CityInfo.API.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CityInfo.API.Controller;
@@ -64,7 +65,7 @@ public class PointsOfInterestController : ControllerBase
     }
 
     [HttpPut("{pointOfInterestId}")]
-    public ActionResult<PointOfInterestDto> UpdatePointOfInterest(int cityId, int pointOfInterestId, PointOfInterestForCreationDto pointOfInterest)
+    public ActionResult<PointOfInterestDto> UpdatePointOfInterest(int cityId, int pointOfInterestId, PointOfInterestForUpdateDto pointOfInterest)
     {
         CityDto? city = CitiesDataStore.Current.Cities.FirstOrDefault(city => city.Id == cityId);
         if (city == null)
@@ -80,6 +81,42 @@ public class PointsOfInterestController : ControllerBase
         
         pointOfInterestDto.Name = pointOfInterest.Name;
         pointOfInterestDto.Description = pointOfInterest.Description;
+        
+        return NoContent();
+    }
+
+    [HttpPatch("{pointOfInterestId}")]
+    public ActionResult<PointOfInterestDto> PartiallyUpdatePointOfInterest(
+        int cityId, 
+        int pointOfInterestId, 
+        JsonPatchDocument<PointOfInterestForUpdateDto> patchDocument)
+    {
+        CityDto? city = CitiesDataStore.Current.Cities.FirstOrDefault(city => city.Id == cityId);
+        if (city == null)
+        {
+            return NotFound();
+        }
+        
+        PointOfInterestDto? pointOfInterestDto = city.PointsOfInterest.FirstOrDefault(point => point.Id == pointOfInterestId);
+        if (pointOfInterestDto == null)
+        {
+            return NotFound();
+        }
+
+        PointOfInterestForUpdateDto pointOfInterestToPatch = new()
+        {
+            Name = pointOfInterestDto.Name,
+            Description = pointOfInterestDto.Description,
+        };
+        patchDocument.ApplyTo(pointOfInterestToPatch, ModelState);
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        pointOfInterestDto.Name = pointOfInterestToPatch.Name;
+        pointOfInterestDto.Description = pointOfInterestToPatch.Description;
         
         return NoContent();
     }
