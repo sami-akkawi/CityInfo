@@ -120,4 +120,24 @@ public class PointsOfInterestController : ControllerBase
         
         return NoContent();
     }
+
+    [HttpDelete("{pointOfInterestId}")]
+    public ActionResult DeletePointOfInterest(int cityId, int pointOfInterestId)
+    {
+        CityDto? city = CitiesDataStore.Current.Cities.FirstOrDefault(city => city.Id == cityId);
+        if (city == null)
+        {
+            return NotFound();
+        }
+        
+        PointOfInterestDto? pointOfInterestDto = city.PointsOfInterest.FirstOrDefault(point => point.Id == pointOfInterestId);
+        if (pointOfInterestDto == null)
+        {
+            return NotFound();
+        }
+        
+        city.PointsOfInterest.Remove(pointOfInterestDto);
+        
+        return NoContent();
+    }
 }
