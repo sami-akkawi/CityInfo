@@ -28,4 +28,21 @@ public class FilesController(FileExtensionContentTypeProvider contentTypeProvide
         
         return File(bytes, contentType, Path.GetFileName(path));
     }
+    
+    [HttpPost]
+    public async Task<ActionResult> CreateFile(IFormFile file)
+    {
+        if (file.Length == 0 || !file.FileName.EndsWith(".pdf") ||
+            file.ContentType != MediaTypeNames.Application.Pdf || file.Length > 20971520)
+        {
+            return BadRequest("Please upload a valid file.");
+        }
+        
+        var path = Path.Combine(Directory.GetCurrentDirectory(), $"uploaded_file_{Guid.NewGuid()}.pdf");
+
+        await using FileStream stream = new(path, FileMode.Create);
+        await file.CopyToAsync(stream);
+        
+        return Ok("Your file was uploaded successfully.");
+    }
 }
