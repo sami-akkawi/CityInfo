@@ -6,7 +6,7 @@ namespace CityInfo.API.Controller;
 
 [Route("api/cities/{cityId}/pointsofinterest")]
 [ApiController]
-public class PointsOfInterestController : ControllerBase
+public class PointsOfInterestController(ILogger<PointsOfInterestController> logger) : ControllerBase
 {
     [HttpGet]
     public ActionResult<IEnumerable<PointOfInterestDto>> GetPointsOfInterest(int cityId)
@@ -14,6 +14,7 @@ public class PointsOfInterestController : ControllerBase
         CityDto? city = CitiesDataStore.Current.Cities.FirstOrDefault(city => city.Id == cityId);
         if (city == null)
         {
+            logger.LogInformation($"City with id {cityId} was not found");
             return NotFound();
         }
         
