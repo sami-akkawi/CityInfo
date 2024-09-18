@@ -11,14 +11,23 @@ public class PointsOfInterestController(ILogger<PointsOfInterestController> logg
     [HttpGet]
     public ActionResult<IEnumerable<PointOfInterestDto>> GetPointsOfInterest(int cityId)
     {
-        CityDto? city = CitiesDataStore.Current.Cities.FirstOrDefault(city => city.Id == cityId);
-        if (city == null)
+        try
         {
-            logger.LogInformation($"City with id {cityId} was not found");
-            return NotFound();
+            CityDto? city = CitiesDataStore.Current.Cities.FirstOrDefault(city => city.Id == cityId);
+            if (city == null)
+            {
+                logger.LogInformation($"City with id {cityId} was not found");
+                return NotFound();
+            }
+
+            return Ok(city.PointsOfInterest);
+        }
+        catch (Exception e)
+        {
+            logger.LogCritical(e, $"Exception occurred while getting points of interest for the city of id '{cityId}': {e.Message}");
+            return StatusCode(500, "An exception occurred while getting points of interest for the city, it's been logged and our support team is on it.");
         }
         
-        return Ok(city.PointsOfInterest);
     }
 
     [HttpGet("{pointOfInterestId}", Name = "GetPointOfInterest")]
