@@ -1,6 +1,6 @@
 ﻿namespace CityInfo.API.Services;
 
-public class LocalMailService(string mailTo = "admin@example.com", string mailFrom = "noreply@example.com")
+public class LocalMailService(string mailTo = "admin@example.com", string mailFrom = "noreply@example.com") : IMailService
 {
     public void Send(string subject, string message)
     {
