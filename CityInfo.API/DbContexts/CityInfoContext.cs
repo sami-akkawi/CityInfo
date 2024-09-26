@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CityInfo.API.DbContexts;
 
-public class CityInfoContext: DbContext
+public class CityInfoContext(DbContextOptions options): DbContext(options: options)
 {
     public DbSet<City> Cities { get; set; }
     
