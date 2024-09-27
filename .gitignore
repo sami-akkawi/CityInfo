@@ -557,3 +557,6 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,windows,rider,jetbrains+all,visualstudio,visualstudiocode
+CityInfo.API/city-info.db
+CityInfo.API/city-info.db-shm
+CityInfo.API/city-info.db-wal
