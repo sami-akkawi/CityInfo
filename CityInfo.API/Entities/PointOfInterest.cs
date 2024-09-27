@@ -12,6 +12,9 @@ public class PointOfInterest(string name)
     [ForeignKey("CityId")]
     public City? City { get; set; }
     
+    [MaxLength(200)]
+    public string? Description { get; set; }
+    
     public int CityId { get; set; }
 
     [Required]
