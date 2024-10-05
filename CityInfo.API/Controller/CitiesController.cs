@@ -18,15 +18,20 @@ public class CitiesController(ICityInfoRepository repository, IMapper mapper) : 
         return Ok(mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cities));
     }
     
-    // [HttpGet("{id}")]
-    // public ActionResult<CityDto> GetCity(int id)
-    // {
-    //     CityDto? city = citiesDataStore.Cities.FirstOrDefault(c => c.Id == id);
-    //     if (city == null)
-    //     {
-    //         return NotFound();
-    //     }
-    //     
-    //     return Ok(city);
-    // }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetCity(int id, bool includePointsOfInterest = false)
+    {
+        City? city = await repository.GetCityAsync(id, includePointsOfInterest);
+        if (city == null)
+        {
+            return NotFound();
+        }
+
+        if (includePointsOfInterest)
+        {
+            return Ok(mapper.Map<CityDto>(city));
+        }
+        
+        return Ok(mapper.Map<CityWithoutPointsOfInterestDto>(city));
+    }
 }

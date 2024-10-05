@@ -6,7 +6,7 @@ public class CityDto
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     
-    public ICollection<PointOfInterestDto> PointsOfInterest { get; set; } = new List<PointOfInterestDto>();
+    public ICollection<PointOfInterestDto> PointOfInterests { get; set; } = new List<PointOfInterestDto>();
 
-    public int NumberPointsOfInterest => PointsOfInterest.Count;
+    public int NumberPointsOfInterest => PointOfInterests.Count;
 }
