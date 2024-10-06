@@ -13,4 +13,8 @@ public interface ICityInfoRepository
     Task<IEnumerable<PointOfInterest>> GetPointOfInterestsForCityAsync(int cityId);
     
     Task<PointOfInterest?> GetPointOfInterestForCityAsync(int cityId, int pointOfInterestId);
+    
+    Task AddPointOfInterestAsync(int cityId, PointOfInterest pointOfInterest);
+
+    Task<bool> SaveChangesAsync();
 }

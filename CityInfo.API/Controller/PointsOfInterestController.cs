@@ -54,32 +54,27 @@ public class PointsOfInterestController(
         return Ok(mapper.Map<PointOfInterestDto>(pointOfInterest));
     }
 
-    // [HttpPost]
-    // public ActionResult<PointOfInterestDto> CreatePointOfInterest(int cityId, PointOfInterestForCreationDto pointOfInterest)
-    // {
-    //     CityDto? city = citiesDataStore.Cities.FirstOrDefault(city => city.Id == cityId);
-    //     if (city == null)
-    //     {
-    //         return NotFound();
-    //     }
-    //     
-    //     int maxPointOfInterestId = citiesDataStore.Cities.SelectMany(c => c.PointOfInterests).Max(p => p.Id);
-    //
-    //     PointOfInterestDto pointOfInterestDto = new()
-    //     {
-    //         Id = maxPointOfInterestId + 1,
-    //         Name = pointOfInterest.Name,
-    //         Description = pointOfInterest.Description,
-    //     };
-    //     
-    //     city.PointOfInterests.Add(pointOfInterestDto);
-    //
-    //     return CreatedAtRoute("GetPointOfInterest", 
-    //         new {cityId = cityId, pointOfInterestId = pointOfInterestDto.Id}, // created the location header value which includes the url to call the newly created resource
-    //         pointOfInterestDto
-    //         );
-    // }
-    //
+    [HttpPost]
+    public async Task<ActionResult<PointOfInterestDto>> CreatePointOfInterest(int cityId, PointOfInterestForCreationDto pointOfInterestForCreation)
+    {
+        if (!await repository.GetCityExists(cityId))
+        {
+            return NotFound();
+        }
+        
+        PointOfInterest pointOfInterest = mapper.Map<PointOfInterest>(pointOfInterestForCreation);
+
+        await repository.AddPointOfInterestAsync(cityId, pointOfInterest);
+        await repository.SaveChangesAsync();
+        
+        PointOfInterestDto pointOfInterestDto = mapper.Map<PointOfInterestDto>(pointOfInterest);
+        
+        return CreatedAtRoute("GetPointOfInterest", 
+            new {cityId = cityId, pointOfInterestId = pointOfInterestDto.Id}, // created the location header value which includes the url to call the newly created resource
+            pointOfInterestDto
+            );
+    }
+    
     // [HttpPut("{pointOfInterestId}")]
     // public ActionResult<PointOfInterestDto> UpdatePointOfInterest(int cityId, int pointOfInterestId, PointOfInterestForUpdateDto pointOfInterest)
     // {
