@@ -21,7 +21,7 @@ public class PointsOfInterestController(
         try
         {
             IEnumerable<PointOfInterest> pointOfInterests = await repository.GetPointOfInterestsForCityAsync(cityId);
-            if (pointOfInterests.Any() && !await repository.GetCityExists(cityId))
+            if (pointOfInterests.Any() && !await repository.CityExistsAsync(cityId))
             {
                 logger.LogInformation($"City with id {cityId} was not found");
                 return NotFound();
@@ -40,7 +40,7 @@ public class PointsOfInterestController(
     [HttpGet("{pointOfInterestId}", Name = "GetPointOfInterest")]
     public async Task<ActionResult<PointOfInterestDto>> GetPointOfInterest(int cityId, int pointOfInterestId)
     {
-        if (!await repository.GetCityExists(cityId))
+        if (!await repository.CityExistsAsync(cityId))
         {
             return NotFound();
         }
@@ -57,7 +57,7 @@ public class PointsOfInterestController(
     [HttpPost]
     public async Task<ActionResult<PointOfInterestDto>> CreatePointOfInterest(int cityId, PointOfInterestForCreationDto pointOfInterestForCreation)
     {
-        if (!await repository.GetCityExists(cityId))
+        if (!await repository.CityExistsAsync(cityId))
         {
             return NotFound();
         }
@@ -75,27 +75,26 @@ public class PointsOfInterestController(
             );
     }
     
-    // [HttpPut("{pointOfInterestId}")]
-    // public ActionResult<PointOfInterestDto> UpdatePointOfInterest(int cityId, int pointOfInterestId, PointOfInterestForUpdateDto pointOfInterest)
-    // {
-    //     CityDto? city = citiesDataStore.Cities.FirstOrDefault(city => city.Id == cityId);
-    //     if (city == null)
-    //     {
-    //         return NotFound();
-    //     }
-    //     
-    //     PointOfInterestDto? pointOfInterestDto = city.PointOfInterests.FirstOrDefault(point => point.Id == pointOfInterestId);
-    //     if (pointOfInterestDto == null)
-    //     {
-    //         return NotFound();
-    //     }
-    //     
-    //     pointOfInterestDto.Name = pointOfInterest.Name;
-    //     pointOfInterestDto.Description = pointOfInterest.Description;
-    //     
-    //     return NoContent();
-    // }
-    //
+    [HttpPut("{pointOfInterestId}")]
+    public async Task<ActionResult> UpdatePointOfInterest(int cityId, int pointOfInterestId, PointOfInterestForUpdateDto pointOfInterestForUpdate)
+    {
+        if (!await repository.CityExistsAsync(cityId))
+        {
+            return NotFound();
+        }
+        
+        PointOfInterest? pointOfInterest = await repository.GetPointOfInterestForCityAsync(cityId, pointOfInterestId);
+        if (pointOfInterest == null)
+        {
+            return NotFound();
+        }
+        
+        mapper.Map(pointOfInterestForUpdate, pointOfInterest);
+        await repository.SaveChangesAsync();
+        
+        return NoContent();
+    }
+    
     // [HttpPatch("{pointOfInterestId}")]
     // public ActionResult<PointOfInterestDto> PartiallyUpdatePointOfInterest(
     //     int cityId, 

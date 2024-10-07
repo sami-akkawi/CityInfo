@@ -22,7 +22,7 @@ public class CityInfoRepository(CityInfoContext context): ICityInfoRepository
         return await context.Cities.FirstOrDefaultAsync(c => c.Id == cityId);
     }
 
-    public async Task<bool> GetCityExists(int cityId)
+    public async Task<bool> CityExistsAsync(int cityId)
     {
         return await context.Cities.AnyAsync(c => c.Id == cityId);
     }
