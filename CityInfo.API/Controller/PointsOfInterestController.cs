@@ -125,26 +125,26 @@ public class PointsOfInterestController(
         
         return NoContent();
     }
-    //
-    // [HttpDelete("{pointOfInterestId}")]
-    // public ActionResult DeletePointOfInterest(int cityId, int pointOfInterestId)
-    // {
-    //     CityDto? city = citiesDataStore.Cities.FirstOrDefault(city => city.Id == cityId);
-    //     if (city == null)
-    //     {
-    //         return NotFound();
-    //     }
-    //     
-    //     PointOfInterestDto? pointOfInterestDto = city.PointOfInterests.FirstOrDefault(point => point.Id == pointOfInterestId);
-    //     if (pointOfInterestDto == null)
-    //     {
-    //         return NotFound();
-    //     }
-    //     
-    //     city.PointOfInterests.Remove(pointOfInterestDto);
-    //     
-    //     mailService.Send("Point of interest deleted", $"{pointOfInterestDto.Name} was deleted...");
-    //     
-    //     return NoContent();
-    // }
+    
+    [HttpDelete("{pointOfInterestId}")]
+    public async Task<ActionResult> DeletePointOfInterest(int cityId, int pointOfInterestId)
+    {
+        if (!await repository.CityExistsAsync(cityId))
+        {
+            return NotFound();
+        }
+        
+        PointOfInterest? pointOfInterest = await repository.GetPointOfInterestForCityAsync(cityId, pointOfInterestId);
+        if (pointOfInterest == null)
+        {
+            return NotFound();
+        }
+        
+        repository.DeletePointOfInterest(pointOfInterest);
+        await repository.SaveChangesAsync();
+        
+        mailService.Send("Point of interest deleted", $"{pointOfInterest.Name} was deleted...");
+        
+        return NoContent();
+    }
 }

@@ -38,6 +38,11 @@ public class CityInfoRepository(CityInfoContext context): ICityInfoRepository
             .FirstOrDefaultAsync(p => p.CityId == cityId && p.Id == pointOfInterestId);
     }
 
+    public void DeletePointOfInterest(PointOfInterest pointOfInterest)
+    {
+        context.PointOfInterests.Remove(pointOfInterest);
+    }
+
     public async Task AddPointOfInterestAsync(int cityId, PointOfInterest pointOfInterest)
     {
         City city = await GetCityAsync(cityId, false);
