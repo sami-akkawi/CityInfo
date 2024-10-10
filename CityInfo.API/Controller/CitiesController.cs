@@ -11,9 +11,11 @@ namespace CityInfo.API.Controller;
 public class CitiesController(ICityInfoRepository repository, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CityWithoutPointsOfInterestDto>>> GetCities()
+    public async Task<ActionResult<IEnumerable<CityWithoutPointsOfInterestDto>>> GetCities(
+        [FromQuery(Name = "name")] string? name
+        )
     {
-        IEnumerable<City> cities = await repository.GetCitiesAsync();
+        IEnumerable<City> cities = await repository.GetCitiesAsync(name);
         
         return Ok(mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cities));
     }
