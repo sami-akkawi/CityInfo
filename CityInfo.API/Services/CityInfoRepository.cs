@@ -11,16 +11,28 @@ public class CityInfoRepository(CityInfoContext context): ICityInfoRepository
         return await context.Cities.OrderBy(c => c.Name).ToListAsync();
     }
 
-    public async Task<IEnumerable<City>> GetCitiesAsync(string? name)
+    public async Task<IEnumerable<City>> GetCitiesAsync(string? name, string? searchQuery)
     {
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(searchQuery))
         {
             return await GetCitiesAsync();
         }
+        
+        var collection = context.Cities as IQueryable<City>;
 
-        name = name.Trim();
-        return await context.Cities
-            .Where(c => c.Name == name)
+        if (!string.IsNullOrEmpty(name))
+        {
+            collection = collection.Where(c => c.Name == name.Trim());
+        }
+
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            collection = collection.Where(
+                c => c.Name.ToLower().Contains(searchQuery.ToLower()) || (c.Description != null && c.Description.ToLower().Contains(searchQuery.ToLower()))
+                );
+        }
+        
+        return await collection
             .OrderBy(c => c.Name)
             .ToListAsync();
     }
@@ -59,7 +71,7 @@ public class CityInfoRepository(CityInfoContext context): ICityInfoRepository
 
     public async Task AddPointOfInterestAsync(int cityId, PointOfInterest pointOfInterest)
     {
-        City city = await GetCityAsync(cityId, false);
+        City? city = await GetCityAsync(cityId, false);
         if (city != null)
         {
             city.PointOfInterests.Add(pointOfInterest);

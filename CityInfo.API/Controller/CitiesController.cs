@@ -12,10 +12,11 @@ public class CitiesController(ICityInfoRepository repository, IMapper mapper) : 
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CityWithoutPointsOfInterestDto>>> GetCities(
-        [FromQuery(Name = "name")] string? name
+        [FromQuery(Name = "name")] string? name,
+        [FromQuery(Name = "searchQuery")] string? searchQuery
         )
     {
-        IEnumerable<City> cities = await repository.GetCitiesAsync(name);
+        IEnumerable<City> cities = await repository.GetCitiesAsync(name, searchQuery);
         
         return Ok(mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cities));
     }
