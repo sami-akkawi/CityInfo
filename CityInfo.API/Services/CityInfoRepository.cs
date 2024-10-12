@@ -6,18 +6,8 @@ namespace CityInfo.API.Services;
 
 public class CityInfoRepository(CityInfoContext context): ICityInfoRepository
 {
-    public async Task<IEnumerable<City>> GetCitiesAsync()
+    public async Task<IEnumerable<City>> GetCitiesAsync(string? name, string? searchQuery, int pageNumber, int pageSize)
     {
-        return await context.Cities.OrderBy(c => c.Name).ToListAsync();
-    }
-
-    public async Task<IEnumerable<City>> GetCitiesAsync(string? name, string? searchQuery)
-    {
-        if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(searchQuery))
-        {
-            return await GetCitiesAsync();
-        }
-        
         var collection = context.Cities as IQueryable<City>;
 
         if (!string.IsNullOrEmpty(name))
@@ -34,6 +24,8 @@ public class CityInfoRepository(CityInfoContext context): ICityInfoRepository
         
         return await collection
             .OrderBy(c => c.Name)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
     }
 
