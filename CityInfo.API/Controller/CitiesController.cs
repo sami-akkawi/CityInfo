@@ -3,6 +3,8 @@ using CityInfo.API.Entities;
 using CityInfo.API.Models;
 using CityInfo.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace CityInfo.API.Controller;
 
@@ -24,8 +26,10 @@ public class CitiesController(ICityInfoRepository repository, IMapper mapper) : 
         {
             pageSize = maxCitiesPageSize;
         }
+
+        (IEnumerable<City> cities, PaginationMetaData paginationMetaData) = await repository.GetCitiesAsync(name, searchQuery, pageNumber, pageSize);
         
-        IEnumerable<City> cities = await repository.GetCitiesAsync(name, searchQuery, pageNumber, pageSize);
+        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(paginationMetaData));
         
         return Ok(mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cities));
     }

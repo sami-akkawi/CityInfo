@@ -6,7 +6,7 @@ namespace CityInfo.API.Services;
 
 public class CityInfoRepository(CityInfoContext context): ICityInfoRepository
 {
-    public async Task<IEnumerable<City>> GetCitiesAsync(string? name, string? searchQuery, int pageNumber, int pageSize)
+    public async Task<(IEnumerable<City>, PaginationMetaData)> GetCitiesAsync(string? name, string? searchQuery, int pageNumber, int pageSize)
     {
         var collection = context.Cities as IQueryable<City>;
 
@@ -22,11 +22,17 @@ public class CityInfoRepository(CityInfoContext context): ICityInfoRepository
                 );
         }
         
-        return await collection
+        int totalItemCount = await collection.CountAsync();
+        
+        PaginationMetaData paginationMetaData = new(totalItemCount, pageSize, pageNumber);
+
+        List<City> cities = await collection
             .OrderBy(c => c.Name)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+        
+        return (cities, paginationMetaData);
     }
 
     public async Task<City?> GetCityAsync(int cityId, bool includePointsOfInterests)
