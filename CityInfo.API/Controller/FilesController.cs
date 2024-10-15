@@ -1,10 +1,12 @@
 ﻿using System.Net.Mime;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 
 namespace CityInfo.API.Controller;
 
 [Route("api/files")]
+[Authorize]
 [ApiController]
 public class FilesController(FileExtensionContentTypeProvider contentTypeProvider) : ControllerBase
 {
