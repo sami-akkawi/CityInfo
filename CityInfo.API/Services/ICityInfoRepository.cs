@@ -17,6 +17,7 @@ public interface ICityInfoRepository
     void DeletePointOfInterest(PointOfInterest pointOfInterest);
     
     Task AddPointOfInterestAsync(int cityId, PointOfInterest pointOfInterest);
+    Task<bool> CityNameMatchesCityId(string cityName, int cityId);
 
     Task<bool> SaveChangesAsync();
 }

@@ -22,6 +22,13 @@ public class PointsOfInterestController(
     {
         try
         {
+            string cityName = User.Claims.FirstOrDefault(claim => claim.Type == "name")?.Value ?? string.Empty;
+
+            if (!await repository.CityNameMatchesCityId(cityName, cityId))
+            {
+                return Forbid();
+            }
+            
             IEnumerable<PointOfInterest> pointOfInterests = await repository.GetPointOfInterestsForCityAsync(cityId);
             if (pointOfInterests.Any() && !await repository.CityExistsAsync(cityId))
             {
@@ -72,7 +79,7 @@ public class PointsOfInterestController(
         PointOfInterestDto pointOfInterestDto = mapper.Map<PointOfInterestDto>(pointOfInterest);
         
         return CreatedAtRoute("GetPointOfInterest", 
-            new {cityId = cityId, pointOfInterestId = pointOfInterestDto.Id}, // created the location header value which includes the url to call the newly created resource
+            new {cityId, pointOfInterestId = pointOfInterestDto.Id}, // created the location header value which includes the url to call the newly created resource
             pointOfInterestDto
             );
     }
