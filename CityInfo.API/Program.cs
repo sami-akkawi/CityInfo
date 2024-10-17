@@ -56,6 +56,15 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
     };
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("MustBeFromZurich", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("city", "Zurich");
+    });
+});
+
 WebApplication app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
