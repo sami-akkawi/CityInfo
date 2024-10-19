@@ -10,7 +10,7 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace CityInfo.API.Controller;
 
 [ApiController]
-[Authorize]
+// [Authorize]
 [Route("api/cities")]
 public class CitiesController(ICityInfoRepository repository, IMapper mapper) : ControllerBase
 {
