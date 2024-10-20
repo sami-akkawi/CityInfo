@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -8,6 +9,7 @@ namespace CityInfo.API.Controller;
 [Route("api/files")]
 [Authorize]
 [ApiController]
+[ApiVersion(0.1, Deprecated = true)]
 public class FilesController(FileExtensionContentTypeProvider contentTypeProvider) : ControllerBase
 {
     [HttpGet("{fileId}")]

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using CityInfo.API.Entities;
 using CityInfo.API.Models;
 using CityInfo.API.Services;
@@ -12,6 +13,7 @@ namespace CityInfo.API.Controller;
 [ApiController]
 // [Authorize]
 [Route("api/cities")]
+[ApiVersion(1)]
 public class CitiesController(ICityInfoRepository repository, IMapper mapper) : ControllerBase
 {
     private const int maxCitiesPageSize = 20;
