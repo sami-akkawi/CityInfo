@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.StaticFiles;
 
 namespace CityInfo.API.Controller;
 
-[Route("api/files")]
-[Authorize]
+[Route("api/v{version:apiVersion}/files")]
+// [Authorize]
 [ApiController]
 [ApiVersion(0.1, Deprecated = true)]
 public class FilesController(FileExtensionContentTypeProvider contentTypeProvider) : ControllerBase
@@ -23,7 +23,7 @@ public class FilesController(FileExtensionContentTypeProvider contentTypeProvide
             return NotFound();
         }
         
-        var bytes = System.IO.File.ReadAllBytes(path);
+        byte[] bytes = System.IO.File.ReadAllBytes(path);
 
         if (!contentTypeProvider.TryGetContentType(path, out string? contentType))
         {
