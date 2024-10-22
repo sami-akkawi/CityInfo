@@ -38,13 +38,13 @@ public class CitiesController(ICityInfoRepository repository, IMapper mapper) : 
         return Ok(mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cities));
     }
     
-    [HttpGet("{id}")]
     /// <summary>
     /// Get city by id
     /// </summary>
     /// <param name="id">The id of the city to get</param>
-    /// <param name="includePointsOfInterest">Whether or not to include the points of interest</param>
+    /// <param name="includePointsOfInterest">Whether to include the points of interest</param>
     /// <returns code="200">A city with or without points of interest</returns>
+    [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
