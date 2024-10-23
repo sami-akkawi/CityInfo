@@ -5,6 +5,8 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
       <UserSecretsId>04939511-d7c1-4e6f-a21c-c86798a2326f</UserSecretsId>
+      <GenerateDocumentationFile>True</GenerateDocumentationFile>
+      <DocumentationFile>CityInfo.API.xml</DocumentationFile>
   </PropertyGroup>
 
     <ItemGroup>

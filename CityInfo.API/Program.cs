@@ -1,3 +1,4 @@
+using System.Reflection;
 using Asp.Versioning;
 using CityInfo.API;
 using CityInfo.API.DbContexts;
@@ -30,7 +31,13 @@ builder.Services.AddProblemDetails(
 );
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(action =>
+{
+    string commentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    string commentsFullPath = Path.Combine(AppContext.BaseDirectory, commentsFile);
+    
+    action.IncludeXmlComments(commentsFullPath);
+});
 builder.Services.AddSingleton<FileExtensionContentTypeProvider>();
 
 #if DEBUG
