@@ -1,5 +1,6 @@
 using System.Reflection;
 using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using CityInfo.API;
 using CityInfo.API.DbContexts;
 using CityInfo.API.Services;
@@ -31,13 +32,6 @@ builder.Services.AddProblemDetails(
 );
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(action =>
-{
-    string commentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    string commentsFullPath = Path.Combine(AppContext.BaseDirectory, commentsFile);
-    
-    action.IncludeXmlComments(commentsFullPath);
-});
 builder.Services.AddSingleton<FileExtensionContentTypeProvider>();
 
 #if DEBUG
@@ -74,11 +68,35 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddApiVersioning(setupAction =>
+    {
+        setupAction.ReportApiVersions = true;
+        setupAction.AssumeDefaultVersionWhenUnspecified = true;
+        setupAction.DefaultApiVersion = new ApiVersion(1, 0);
+    }).AddMvc()
+    .AddApiExplorer(action => action.SubstituteApiVersionInUrl = true);
+
+IApiVersionDescriptionProvider apiVersionDescriptionProvider = builder.Services.BuildServiceProvider()
+    .GetRequiredService<IApiVersionDescriptionProvider>();
+
+builder.Services.AddSwaggerGen(action =>
 {
-    setupAction.ReportApiVersions = true;
-    setupAction.AssumeDefaultVersionWhenUnspecified = true;
-    setupAction.DefaultApiVersion = new ApiVersion(1, 0);
-}).AddMvc();
+    foreach (ApiVersionDescription description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+    {
+        action.SwaggerDoc(
+            $"{description.GroupName}",
+            new()
+            {
+                Title = "City Info API",
+                Version = description.ApiVersion.ToString(),
+                Description = "Though this API you can access cities and their points of interest.",
+            });
+    }
+    
+    string commentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    string commentsFullPath = Path.Combine(AppContext.BaseDirectory, commentsFile);
+    
+    action.IncludeXmlComments(commentsFullPath);
+});
 
 WebApplication app = builder.Build();
 
@@ -91,7 +109,13 @@ if (!app.Environment.IsDevelopment())
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(action => {
+        IReadOnlyList<ApiVersionDescription> descriptions = app.DescribeApiVersions();
+        foreach (ApiVersionDescription description in descriptions)
+        {
+            action.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+        }
+    });
 }
 
 app.UseHttpsRedirection();
