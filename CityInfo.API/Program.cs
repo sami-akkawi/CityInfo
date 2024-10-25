@@ -7,6 +7,7 @@ using CityInfo.API.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -96,6 +97,28 @@ builder.Services.AddSwaggerGen(action =>
     string commentsFullPath = Path.Combine(AppContext.BaseDirectory, commentsFile);
     
     action.IncludeXmlComments(commentsFullPath);
+    
+    action.AddSecurityDefinition("CityInfoApiBearerAuth", new()
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        Description = "Input a valid JWT token to access the API"
+    });
+    
+    action.AddSecurityRequirement(new()
+    {
+        {
+            new()
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "CityInfoApiBearerAuth"
+                }
+            },
+            new List<string>()
+        }
+    });
 });
 
 WebApplication app = builder.Build();

@@ -11,7 +11,7 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace CityInfo.API.Controller;
 
 [ApiController]
-// [Authorize]
+[Authorize]
 [Route("api/v{version:apiVersion}/cities")]
 [ApiVersion(1)]
 public class CitiesController(ICityInfoRepository repository, IMapper mapper) : ControllerBase
